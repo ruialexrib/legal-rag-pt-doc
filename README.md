@@ -1,100 +1,157 @@
-# Legal RAG PT - Documentation
+<div align="center">
 
-Documentation for a fully local Retrieval-Augmented Generation (RAG) system that answers natural-language questions about the **Regulatory Code of the Municipality of Porto (CRMP)**.
+# Legal RAG PT — Documentation
+
+### Technical documentation for a fully local RAG system over Portuguese legal documents
+
+[![RAG](https://img.shields.io/badge/RAG-Retrieval--Augmented%20Generation-7B2CBF)](#architecture)
+[![Python](https://img.shields.io/badge/Python-3.x-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Qdrant](https://img.shields.io/badge/Qdrant-Vector%20Database-DC244C?logo=qdrant&logoColor=white)](https://qdrant.tech/)
+[![Ollama](https://img.shields.io/badge/Ollama-Local%20Models-black)](https://ollama.com/)
+[![n8n](https://img.shields.io/badge/n8n-Workflow%20Automation-EA4B71?logo=n8n&logoColor=white)](https://n8n.io/)
+
+**Local-first · Portuguese legal RAG · Semantic retrieval · Grounded generation**
+
+</div>
+
+---
+
+## About
+
+This repository contains the central technical documentation for a fully local **Retrieval-Augmented Generation (RAG)** system that answers natural-language questions about the **Regulatory Code of the Municipality of Porto (CRMP)**.
 
 The solution processes and indexes the regulatory document, retrieves relevant legal passages through semantic search, and uses a locally executed language model to generate answers in European Portuguese with article and page references.
 
-## Project repositories
+The complete technical report is available in [`legal_rag_pt_doc.pdf`](legal_rag_pt_doc.pdf).
 
-The implementation is divided into two complementary repositories:
+---
+
+## Project Repositories
 
 | Repository | Purpose |
-|---|---|
-| [`legal-rag-pt`](https://github.com/ruialexrib/legal-rag-pt) | Document extraction, text preprocessing, legal structure parsing, chunking, embedding generation, Qdrant indexing, vector search, and retrieval evaluation. |
-| [`legal-rag-pt-n8n`](https://github.com/ruialexrib/legal-rag-pt-n8n) | Conversational application and n8n workflow for question embedding, context retrieval, grounded answer generation, and source presentation. |
+| --- | --- |
+| [`legal-rag-pt`](https://github.com/ruialexrib/legal-rag-pt) | Document extraction, preprocessing, legal parsing, chunking, embeddings, Qdrant indexing, vector search, and retrieval evaluation. |
+| [`legal-rag-pt-n8n`](https://github.com/ruialexrib/legal-rag-pt-n8n) | Conversational application and n8n workflow for retrieval, grounded answer generation, and source presentation. |
+
+---
 
 ## Architecture
 
 ```text
 CRMP PDF
-   |
-   v
+   │
+   ▼
 Extraction and preprocessing
-   |
-   v
+   │
+   ▼
 Article parsing and chunking
-   |
-   v
-bge-m3 embeddings --> Qdrant vector collection
-                          |
-User question             |
-   |                      |
-   v                      |
-n8n workflow --> semantic search (top 5)
-   |                      |
-   +<---------------------+
-   |
-   v
-Grounded context --> AMALIA-9B via Ollama
-   |
-   v
-Answer in European Portuguese with article and page references
+   │
+   ▼
+bge-m3 embeddings ──────► Qdrant vector collection
+                              │
+User question                 │
+   │                          │
+   ▼                          │
+n8n workflow ──► semantic search (Top-5)
+   │                          │
+   ◄──────────────────────────┘
+   │
+   ▼
+Grounded context ──► AMALIA-9B via Ollama
+   │
+   ▼
+European Portuguese answer
+with article and page references
 ```
 
-The architecture separates operations performed during corpus preparation from those performed for each query:
+The architecture separates two main stages:
 
-- **Ingestion and indexing:** extracts the CRMP, preserves its legal structure and page provenance, creates overlapping chunks, generates embeddings, and stores them in Qdrant.
-- **Query and generation:** embeds the user's question, retrieves the most relevant chunks, builds a grounded context, generates the answer, and presents the corresponding sources.
+- **Ingestion and indexing** — extracts the CRMP, preserves legal structure and page provenance, creates overlapping chunks, generates embeddings, and stores them in Qdrant.
+- **Query and generation** — embeds the question, retrieves the most relevant chunks, constructs grounded context, generates the answer, and presents the corresponding sources.
 
-## Main technologies
+---
 
-- [bge-m3](https://huggingface.co/BAAI/bge-m3) for multilingual text embeddings
-- [Qdrant](https://qdrant.tech/) for vector storage and similarity search
-- [Ollama](https://ollama.com/) for local model execution
-- [AMALIA-9B](https://huggingface.co/ruialexrib/AMALIA-9B-0626-SFT-GGUF) for answer generation in European Portuguese
-- [n8n](https://n8n.io/) for workflow orchestration and the conversational interface
-- Python and Jupyter notebooks for corpus processing and retrieval evaluation
+## Technology Stack
 
-## Documentation
+| Technology | Purpose |
+| --- | --- |
+| **Python / Jupyter** | Corpus processing and retrieval evaluation |
+| **bge-m3** | Multilingual text embeddings |
+| **Qdrant** | Vector storage and similarity search |
+| **Ollama** | Local model execution |
+| **AMALIA-9B** | Answer generation in European Portuguese |
+| **n8n** | Workflow orchestration and conversational interface |
 
-The complete technical report is available in [`legal_rag_pt_doc.pdf`](legal_rag_pt_doc.pdf).
+---
 
-It covers:
+## Documentation Scope
 
-- theoretical background on embeddings, vector databases, and RAG;
-- system architecture and local environment setup;
-- extraction and processing of the 662-page CRMP document;
-- identification of 1,440 articles and creation of 1,617 chunks;
-- generation of 1,024-dimensional embeddings with `bge-m3`;
-- Qdrant indexing and semantic vector search;
-- retrieval evaluation using Hit@K, Recall@K, and Mean Reciprocal Rank;
-- implementation of the conversational application in n8n;
-- limitations and directions for future work.
+The technical report covers:
 
-## Preliminary results
+- Embeddings, vector databases, and RAG fundamentals
+- System architecture and local environment setup
+- Extraction and processing of the 662-page CRMP document
+- Identification of 1,440 articles
+- Creation of 1,617 text chunks
+- Generation of 1,024-dimensional `bge-m3` embeddings
+- Qdrant indexing and semantic vector search
+- Retrieval evaluation with Hit@K, Recall@K, and Mean Reciprocal Rank
+- Conversational application implementation with n8n
+- Limitations and future work
 
-The retrieval component was initially evaluated using five manually annotated questions. A relevant article was ranked first in every case, producing `Hit@1`, `Recall@1`, and `MRR` scores of `1.000`, with an average search latency of `0.909 s`.
+---
 
-These results validate the implementation for the evaluated examples but should not be interpreted as evidence of general performance. A larger and more diverse evaluation set is required.
+## Preliminary Results
 
-## Getting started
+The retrieval component was initially evaluated using five manually annotated questions. A relevant article was ranked first in every evaluated case:
 
-Clone both implementation repositories:
+| Metric | Result |
+| --- | ---: |
+| Hit@1 | `1.000` |
+| Recall@1 | `1.000` |
+| MRR | `1.000` |
+| Mean search latency | `0.909 s` |
+
+These results validate the implementation for the evaluated examples but should **not** be interpreted as evidence of general retrieval performance. A larger and more diverse evaluation set is required.
+
+---
+
+## Getting Started
+
+Clone the two implementation repositories:
 
 ```bash
 git clone https://github.com/ruialexrib/legal-rag-pt.git
 git clone https://github.com/ruialexrib/legal-rag-pt-n8n.git
 ```
 
-Then follow their individual setup instructions:
+Then:
 
-1. Use [`legal-rag-pt`](https://github.com/ruialexrib/legal-rag-pt) to process the source document, generate embeddings, and populate the `crmp_bge_m3` Qdrant collection.
-2. Use [`legal-rag-pt-n8n`](https://github.com/ruialexrib/legal-rag-pt-n8n) to start n8n, import the workflow, and access the conversational interface.
+1. Use `legal-rag-pt` to process the source document, generate embeddings, and populate the `crmp_bge_m3` Qdrant collection.
+2. Use `legal-rag-pt-n8n` to start n8n, import the workflow, and access the conversational interface.
 
-## Scope and disclaimer
+Refer to each repository's README for detailed setup instructions.
 
-This project is intended for experimental and educational purposes. Generated responses do not constitute legal advice and must be verified against the applicable official sources, including the official CRMP text.
+---
+
+## Repository Structure
+
+```text
+legal-rag-pt-doc/
+├── legal_rag_pt_doc.pdf   # Complete technical report
+└── README.md               # Project overview
+```
+
+---
+
+## Scope and Disclaimer
+
+This project is intended for **experimental, educational, and technical demonstration purposes**.
+
+Generated responses do not constitute legal advice and must be verified against the applicable official sources, including the official CRMP text.
+
+---
 
 ## Author
 
-Rui Ribeiro - [github.com/ruialexrib](https://github.com/ruialexrib)
+**Rui Ribeiro** — [GitHub](https://github.com/ruialexrib)
