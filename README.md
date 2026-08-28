@@ -75,12 +75,12 @@ The architecture separates two main stages:
 
 | Technology | Purpose |
 | --- | --- |
-| **Python / Jupyter** | Corpus processing and retrieval evaluation |
-| **bge-m3** | Multilingual text embeddings |
-| **Qdrant** | Vector storage and similarity search |
-| **Ollama** | Local model execution |
-| **AMALIA-9B** | Answer generation in European Portuguese |
-| **n8n** | Workflow orchestration and conversational interface |
+| [Python](https://www.python.org/) / [Jupyter](https://jupyter.org/) | Corpus processing and retrieval evaluation |
+| [bge-m3](https://huggingface.co/BAAI/bge-m3) | Multilingual text embeddings |
+| [Qdrant](https://qdrant.tech/) | Vector storage and similarity search |
+| [Ollama](https://ollama.com/) | Local model execution |
+| [AMALIA-9B](https://huggingface.co/ruialexrib/AMALIA-9B-0626-SFT-GGUF) | Answer generation in European Portuguese |
+| [n8n](https://n8n.io/) | Workflow orchestration and conversational interface |
 
 ---
 
